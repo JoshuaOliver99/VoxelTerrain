@@ -7,7 +7,7 @@ namespace SunnyValleyStudio
     /// <summary>
     /// Block/Voxel type
     /// </summary>
-    public enum BlockType
+    public enum VoxelType
     {
         Nothing,
         Air,

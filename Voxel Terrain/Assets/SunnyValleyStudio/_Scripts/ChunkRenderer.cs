@@ -33,8 +33,8 @@ namespace SunnyValleyStudio
 
         private void Awake()
         {
-            meshFilter.GetComponent<MeshFilter>();
-            meshCollider.GetComponent<MeshCollider>();
+            meshFilter = GetComponent<MeshFilter>();
+            meshCollider = GetComponent<MeshCollider>();
             mesh = meshFilter.mesh;
         }
 

@@ -7,9 +7,9 @@ namespace SunnyValleyStudio
     public class ChunkData
     {
         // NOTE: Change everything from public
-        public BlockType[] blocks;
+        public VoxelType[] voxel;
         public int chunkSize = 16;
-        public int chunkHeight = 128;
+        public int chunkHeight = 100;
         public World worldReference;
         public Vector3Int worldPosition;
 
@@ -20,7 +20,7 @@ namespace SunnyValleyStudio
             this.chunkHeight = chunkHeight; // NOTE: SunnyValleyStudio has these swapped...
             this.worldReference = world;
             this.worldPosition = worldPosition;
-            blocks = new BlockType[chunkSize * chunkHeight * chunkSize];
+            voxel = new VoxelType[chunkSize * chunkHeight * chunkSize];
         }
 
     }
