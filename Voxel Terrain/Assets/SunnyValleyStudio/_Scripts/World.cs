@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Events;
 
 namespace SunnyValleyStudio
 {
@@ -20,6 +20,8 @@ namespace SunnyValleyStudio
 
         Dictionary<Vector3Int, ChunkData> chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>();
         Dictionary<Vector3Int, ChunkRenderer> chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>();
+
+        public UnityEvent OnWorldCreated, OnNewChunksGenerated;
 
         public void GenerateWorld()
         {
@@ -52,6 +54,13 @@ namespace SunnyValleyStudio
                 chunkRenderer.InitializeChunk(data);
                 chunkRenderer.UpdateChunk(meshData);
             }
+            OnWorldCreated?.Invoke();
+        }
+
+        internal void LoadAdditionalChunkRequest(GameObject player)
+        {
+            Debug.Log($"[{name}] Load more chunks");
+            OnNewChunksGenerated?.Invoke();
         }
 
 
@@ -120,3 +129,4 @@ namespace SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=OObDevIzwcQ&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=L5obsaFeJPQ&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=TOLlDa2XTbQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=3&ab_channel=SunnyValleyStudio
+// Source: S2 - P12 https://www.youtube.com/watch?v=ev4Nm50Ujok&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=12&ab_channel=SunnyValleyStudio

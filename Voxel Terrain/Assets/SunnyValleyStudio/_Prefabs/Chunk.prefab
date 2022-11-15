@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5415817404221841482}
   - component: {fileID: 1624703594186436689}
   - component: {fileID: 1847807137056263811}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Chunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63,8 +63,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 25e226ad1e138b94a81b615b9fcc7fd3, type: 2}
-  - {fileID: 2100000, guid: b5ab4a8a9778bc744b7f264e530e07a1, type: 2}
+  - {fileID: 2100000, guid: f5d5772526d21ac47a64fc06e6909435, type: 2}
+  - {fileID: 2100000, guid: 2bab9dbe8f8f0f04c87e77a141183f30, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
