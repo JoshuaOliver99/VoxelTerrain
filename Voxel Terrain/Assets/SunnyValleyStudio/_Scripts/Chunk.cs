@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SunnyValleyStudio
@@ -70,7 +71,7 @@ namespace SunnyValleyStudio
             }
             else
             {
-                throw new Exception("Need to ask World for appropriate chunk");
+                WorldDataHelper.SetVoxel(chunkData.worldReference, localPosition, voxel);
             }
         }
 
@@ -100,6 +101,42 @@ namespace SunnyValleyStudio
             return meshData;
         }
 
+        internal static List<ChunkData> GetEdgeNeighbourChunk(ChunkData chunkData, Vector3Int worldPosition)
+        {
+            Vector3Int chunkPosition = GetVoxelInChunkCoordinates(chunkData, worldPosition);
+            List<ChunkData> neighboursToUpdate = new List<ChunkData>();
+
+            if (chunkPosition.x == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition - Vector3Int.right));
+            if (chunkPosition.x == chunkData.chunkSize - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition + Vector3Int.right));
+
+            if (chunkPosition.y == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition - Vector3Int.up));
+            if (chunkPosition.y == chunkData.chunkHeight - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition + Vector3Int.up));
+
+            if (chunkPosition.z == 0)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition - Vector3Int.forward));
+            if (chunkPosition.z == chunkData.chunkSize - 1)
+                neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition + Vector3Int.forward));
+
+            return neighboursToUpdate;
+        }
+
+        internal static bool IsOnEdge(ChunkData chunkData, Vector3Int worldPosition)
+        {
+            Vector3Int chunkPosition = GetVoxelInChunkCoordinates(chunkData, worldPosition);
+
+            // If on the chunk edge...
+            if (chunkPosition.x == 0 || chunkPosition.x == chunkData.chunkSize - 1 ||
+                chunkPosition.y == 0 || chunkPosition.y == chunkData.chunkHeight - 1 ||
+                chunkPosition.z == 0 || chunkPosition.z == chunkData.chunkSize - 1)
+                return true;
+
+            return false;
+        }
+
         internal static Vector3Int ChunkPositionFromBlockCoords(World world, int x, int y, int z)
         {
             Vector3Int pos = new Vector3Int
@@ -116,3 +153,6 @@ namespace SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=vsdIKEAuH1I&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=s5mAf-VMgCM&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=L5obsaFeJPQ&ab_channel=SunnyValleyStudio
+// Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
+
+

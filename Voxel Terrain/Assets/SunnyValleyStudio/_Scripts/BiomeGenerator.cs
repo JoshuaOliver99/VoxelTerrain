@@ -23,7 +23,7 @@ namespace SunnyValleyStudio
             biomeNoiseData.worldOffset = mapSeedOffset;
             int groundPosition = GetSurfaceHeightNoise(data.worldPosition.x + x, data.worldPosition.z + z, data.chunkHeight);
 
-            for (int y = 0; y < data.chunkHeight; y++)
+            for (int y = data.worldPosition.y; y < data.worldPosition.y + data.chunkHeight; y++)
             {
                 startLayerHandler.Handle(data, x, y, z, groundPosition, mapSeedOffset);
             }
@@ -55,6 +55,7 @@ namespace SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=tf8x5R5RU-E&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=6&ab_channel=SunnyValleyStudio
 // Srouce: https://www.youtube.com/watch?v=8A-D2VZJU4c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=8&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=Pdmw3I0TjK4&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=9&ab_channel=SunnyValleyStudio
+// Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
 
 
 // Source: https://adrianb.io/2014/08/09/perlinnoise.html

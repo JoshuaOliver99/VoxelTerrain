@@ -23,12 +23,15 @@ namespace SunnyValleyStudio
 
         private bool isWaiting = false;
 
+        public World world;
+
         private void Awake()
         {
             if (mainCamera == null)
                 mainCamera = Camera.main;
             playerInput = GetComponent<PlayerInput>();
             playerMovement = GetComponent<PlayerMovement>();
+            world = FindObjectOfType<World>();
         }
 
         private void Start()
@@ -39,7 +42,16 @@ namespace SunnyValleyStudio
 
         private void HandleMouseClick()
         {
-            
+            Ray playerRay = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(playerRay, out hit, interactionRayLength, groundMask))
+                ModifyTerrain(hit);
+        }
+
+        private void ModifyTerrain(RaycastHit hit)
+        {
+            world.SetVoxel(hit, VoxelType.Air);
         }
 
         private void HandleFlyClick()
@@ -83,3 +95,6 @@ namespace SunnyValleyStudio
 }
 
 // Source: https://www.youtube.com/watch?v=BygdDfOwZY8&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=11&ab_channel=SunnyValleyStudio
+// Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
+
+

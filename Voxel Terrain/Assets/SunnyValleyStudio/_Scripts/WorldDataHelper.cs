@@ -9,7 +9,7 @@ namespace SunnyValleyStudio
 {
     public static class WorldDataHelper
     {
-        public static Vector3Int ChunkPositionFromBlockCoords(World world, Vector3Int position)
+        public static Vector3Int ChunkPositionFromVoxelCoords(World world, Vector3Int position)
         {
             return new Vector3Int
             {
@@ -31,19 +31,19 @@ namespace SunnyValleyStudio
             {
                 for (int z = startZ; z <= endZ; z += world.chunkSize)
                 {
-                    Vector3Int chunkPos = ChunkPositionFromBlockCoords(world, new Vector3Int(x, 0, z));
+                    Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
                     chunkPositionsToCreate.Add(chunkPos);
-                    //if (x >= playerPosition.x - world.chunkSize &&
-                    //    x <= playerPosition.x + world.chunkSize &&
-                    //    z >= playerPosition.z - world.chunkSize &&
-                    //    z >= playerPosition.z + world.chunkSize)
-                    //{
-                    //    for (int y =  -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
-                    //    {
-                    //        chunkPos = ChunkPositionFromBlockCoords(world, new Vector3Int(x, y, z));
-                    //        chunkPositionsToCreate.Add(chunkPos);
-                    //    }
-                    //}
+                    if (x >= playerPosition.x - world.chunkSize &&
+                        x <= playerPosition.x + world.chunkSize &&
+                        z >= playerPosition.z - world.chunkSize &&
+                        z >= playerPosition.z + world.chunkSize)
+                    {
+                        for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
+                        {
+                            chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
+                            chunkPositionsToCreate.Add(chunkPos);
+                        }
+                    }
                 }
             }
 
@@ -77,23 +77,58 @@ namespace SunnyValleyStudio
             {
                 for (int z = startZ; z <= endZ; z += world.chunkSize)
                 {
-                    Vector3Int chunkPos = ChunkPositionFromBlockCoords(world, new Vector3Int(x, 0, z));
+                    Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
                     chunkDataPosiionsToCreate.Add(chunkPos);
-                    //if (x >= playerPosition.x - world.chunkSize &&
-                    //    x <= playerPosition.x + world.chunkSize &&
-                    //    z >= playerPosition.z - world.chunkSize &&
-                    //    z >= playerPosition.z + world.chunkSize)
-                    //{
-                    //    for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
-                    //    {
-                    //        chunkPos = ChunkPositionFromBlockCoords(world, new Vector3Int(x, y, z));
-                    //        chunkDataPosiionsToCreate.Add(chunkPos);
-                    //    }
-                    //}
+                    if (x >= playerPosition.x - world.chunkSize &&
+                        x <= playerPosition.x + world.chunkSize &&
+                        z >= playerPosition.z - world.chunkSize &&
+                        z >= playerPosition.z + world.chunkSize)
+                    {
+                        for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
+                        {
+                            chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
+                            chunkDataPosiionsToCreate.Add(chunkPos);
+                        }
+                    }
                 }
             }
 
             return chunkDataPosiionsToCreate;
+        }
+
+        internal static ChunkRenderer GetChunk(World worldReference, Vector3Int worldPosition)
+        {
+            Debug.Log("TEST1");
+
+            if (worldReference.worldData.chunkDictionary.ContainsKey(worldPosition))
+            {
+                Debug.Log("TEST2");
+                return worldReference.worldData.chunkDictionary[worldPosition];
+            }
+            Debug.Log("TEST3");
+            
+            return null;
+        }
+
+        internal static void SetVoxel(World worldReference, Vector3Int pos, VoxelType voxelType)
+        {
+            ChunkData chunkData = GetChunkData(worldReference, pos);
+            if (chunkData != null)
+            {
+                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, pos);
+                Chunk.SetVoxel(chunkData, localPosition, voxelType);
+            }
+        }
+
+        public static ChunkData GetChunkData(World worldReference, Vector3Int pos)
+        {
+            Vector3Int chunkPosition = ChunkPositionFromVoxelCoords(worldReference, pos);
+
+            ChunkData containerChunk = null;
+
+            worldReference.worldData.chunkDataDictionary.TryGetValue(chunkPosition, out containerChunk);
+
+            return containerChunk;
         }
 
         internal static List<Vector3Int> GetUnneededData(World.WorldData worldData, List<Vector3Int> allChunkDataPositionsNeeded)
@@ -142,3 +177,6 @@ namespace SunnyValleyStudio
 // Source: S2 - P13 https://www.youtube.com/watch?v=AHkh5WNq528&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=13&ab_channel=SunnyValleyStudio
 // Source: S2 - P14 https://www.youtube.com/watch?v=AvowpcZssxU&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=14&ab_channel=SunnyValleyStudio
 // Source: S2 - P15 https://www.youtube.com/watch?v=qOcJDH0FfsY&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=15&ab_channel=SunnyValleyStudio
+// Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
+// Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
+

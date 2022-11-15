@@ -76,6 +76,64 @@ namespace SunnyValleyStudio
             OnWorldCreated?.Invoke();
         }
 
+        internal bool SetVoxel(RaycastHit hit, VoxelType voxelType)
+        {
+            // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
+            // Hardcoded...
+            ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
+            if (chunk == false)
+                return false;
+
+            Vector3Int pos = GetVoxelPos(hit);
+
+            WorldDataHelper.SetVoxel(chunk.ChunkData.worldReference, pos, voxelType);
+            chunk.ModifiedByThePlayer = true;
+
+            if (Chunk.IsOnEdge(chunk.ChunkData, pos))
+            {
+                List<ChunkData> neighbourDataList = Chunk.GetEdgeNeighbourChunk(chunk.ChunkData, pos);
+                foreach (ChunkData neighbourData in neighbourDataList)
+                {
+                    // NOTE: BUG: it seems like chunks < 0 are not getting spawned
+                    print($"TEST FAILING > {neighbourData.worldPosition}");
+                    print($"TEST FAILING > {neighbourData.worldReference.name}");
+
+                    //neighbourData.modifiedByThePlayer = true;
+                    ChunkRenderer chunkToUpdate = WorldDataHelper.GetChunk(neighbourData.worldReference, neighbourData.worldPosition);
+
+                    print($"TEST FAILING > {neighbourData}");
+
+                    if (chunkToUpdate != null)
+                        chunkToUpdate.UpdateChunk();
+                }
+            }
+
+            chunk.UpdateChunk();
+            return true;
+        }
+
+        private Vector3Int GetVoxelPos(RaycastHit hit)
+        {
+            // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
+            // Hardcoded...
+            Vector3 pos = new Vector3(
+                GetVoxelPositionIn(hit.point.x, hit.normal.x),
+                GetVoxelPositionIn(hit.point.y, hit.normal.y),
+                GetVoxelPositionIn(hit.point.z, hit.normal.z));
+
+            return Vector3Int.RoundToInt(pos);
+        }
+
+        private float GetVoxelPositionIn(float pos, float normal)
+        {
+            // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
+            // Hardcoded...
+            if (Mathf.Abs(pos % 1) == 0.5f)
+                pos -= (normal / 2);
+
+            return (float)pos;
+        }
+
         internal void RemoveChunk(ChunkRenderer chunk)
         {
             chunk.gameObject.SetActive(false);
@@ -108,53 +166,6 @@ namespace SunnyValleyStudio
             GenerateWorld(Vector3Int.RoundToInt(player.transform.position));
             OnNewChunksGenerated?.Invoke();
         }
-
-
-        /// <summary>
-        /// V1 (deprecated)
-        /// Generate the different types of voxels.
-        /// Replaced by TerrainGenerator.GenerateChunkData()
-        /// </summary>
-        /// <param name="data"></param>
-#if false
-        private void GenerateVoxels(ChunkData data)
-        {
-            for (int x = 0; x < data.chunkSize; x++)
-            {
-                for (int z = 0; z < data.chunkSize; z++)
-                {
-                    // NOTE: From here has been seperated...
-                    // Replaced by BiomeGenerator.ProcessChunkColumn()
-
-                    float noiseValue = Mathf.PerlinNoise((data.worldPosition.x + x) * noiseScale, (data.worldPosition.z + z) * noiseScale);
-                    int groundPosition = Mathf.RoundToInt(noiseValue * chunkHeight);
-
-                    for (int y = 0; y < chunkHeight; y++)
-                    {
-                        VoxelType voxelType = VoxelType.Dirt;
-
-                        if (y > groundPosition)
-                        {
-                            if (y < waterThreshold)
-                            {
-                                voxelType = VoxelType.Water;
-                            }
-                            else
-                            {
-                                voxelType = VoxelType.Air;
-                            }
-                        }
-                        else if (y == groundPosition)
-                        {
-                            voxelType = VoxelType.Grass_Dirt;
-                        }
-
-                        Chunk.SetVoxel(data, new Vector3Int(x, y, z), voxelType);
-                    }
-                }
-            }
-        }
-#endif
 
         internal VoxelType GetBlockFromChunkCoordinates(ChunkData chunkData, int x, int y, int z)
         {
@@ -195,5 +206,6 @@ namespace SunnyValleyStudio
 // Source: S2 - P13 https://www.youtube.com/watch?v=AHkh5WNq528&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=13&ab_channel=SunnyValleyStudio
 // Source: S2 - P14 https://www.youtube.com/watch?v=AvowpcZssxU&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=14&ab_channel=SunnyValleyStudio
 // Source: S2 - P15 https://www.youtube.com/watch?v=qOcJDH0FfsY&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=15&ab_channel=SunnyValleyStudio
-
+// Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
+// Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
 

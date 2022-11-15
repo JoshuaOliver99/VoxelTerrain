@@ -58,7 +58,7 @@ namespace SunnyValleyStudio
 
         private void SetCurrentChunkCoordinated()
         {
-            currentPlayerChunkPosition = WorldDataHelper.ChunkPositionFromBlockCoords(world, Vector3Int.RoundToInt(player.transform.position));
+            currentPlayerChunkPosition = WorldDataHelper.ChunkPositionFromVoxelCoords(world, Vector3Int.RoundToInt(player.transform.position));
             currentChunkCentre.x = currentPlayerChunkPosition.x + world.chunkSize / 2;
             currentChunkCentre.z = currentPlayerChunkPosition.z + world.chunkSize / 2;
         }

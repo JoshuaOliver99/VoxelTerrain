@@ -27,7 +27,7 @@ namespace SunnyValleyStudio
         {
             if (Input.GetMouseButtonDown(0))
             {
-                OnFly?.Invoke();
+                OnMouseClick?.Invoke();
             }
         }
 
