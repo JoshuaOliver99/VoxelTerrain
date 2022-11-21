@@ -24,6 +24,7 @@ namespace SunnyValleyStudio
         public UnityEvent OnWorldCreated, OnNewChunksGenerated;
 
         public WorldData worldData { get; private set; }
+        public bool IsWorldCreated { get; private set; }
 
         private void Awake()
         {
@@ -53,7 +54,7 @@ namespace SunnyValleyStudio
             foreach (Vector3Int pos in worldGenerationData.chunkDataToRemove)
                 WorldDataHelper.RemoveChunkData(this, pos);
 
-            // Generate the chunks and voxel data...
+            // Generate the ChunkData...
             foreach (Vector3Int pos in worldGenerationData.chunkDataPositionsToCreate)
             {
                 ChunkData data = new ChunkData(chunkSize, chunkHeight, this, pos);
@@ -61,19 +62,42 @@ namespace SunnyValleyStudio
                 worldData.chunkDataDictionary.Add(pos, newData);
             }
 
-            // Render the chunks...
+            // Generate the MeshData...
+            Dictionary<Vector3Int, MeshData> meshDataDictionary = new Dictionary<Vector3Int, MeshData>();
             foreach (Vector3Int pos in worldGenerationData.chunkPositionsToCreate)
             {
                 ChunkData data = worldData.chunkDataDictionary[pos];
                 MeshData meshData = Chunk.GetChunkMeshData(data);
-                GameObject chunkObject = Instantiate(chunkPrefab, pos, Quaternion.identity);
-                ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
-                worldData.chunkDictionary.Add(pos, chunkRenderer);
-                chunkRenderer.InitializeChunk(data);
-                chunkRenderer.UpdateChunk(meshData); 
+                meshDataDictionary.Add(pos, meshData);   
             }
 
-            OnWorldCreated?.Invoke();
+            StartCoroutine(ChunkCreationCoroutine(meshDataDictionary));
+        }
+
+        IEnumerator ChunkCreationCoroutine(Dictionary<Vector3Int, MeshData> meshDataDictionary)
+        {
+            foreach (var item in meshDataDictionary)
+            {
+                CreateChunk(worldData, item.Key, item.Value);
+                yield return new WaitForEndOfFrame();
+            }
+            
+            if (IsWorldCreated == false)
+            {
+                IsWorldCreated = true;
+                OnWorldCreated?.Invoke();
+            }
+
+
+        }
+
+        private void CreateChunk(WorldData worldData, Vector3Int worldPos, MeshData meshData)
+        {
+            GameObject chunkObject = Instantiate(chunkPrefab, worldPos, Quaternion.identity);
+            ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
+            worldData.chunkDictionary.Add(worldPos, chunkRenderer);
+            chunkRenderer.InitializeChunk(worldData.chunkDataDictionary[worldPos]);
+            chunkRenderer.UpdateChunk(meshData);
         }
 
         internal bool SetVoxel(RaycastHit hit, VoxelType voxelType)
@@ -137,7 +161,7 @@ namespace SunnyValleyStudio
         {
             List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
             List<Vector3Int> allChunkDataPositionsNeeded = WorldDataHelper.GetDataPositionsAroundPlayer(this, playerPosition);
-            
+
             List<Vector3Int> chunkPositionsToCreate = WorldDataHelper.SelectPositionsToCreate(worldData, allChunkPositionsNeeded, playerPosition);
             List<Vector3Int> chunkDataPositionsToCreate = WorldDataHelper.SelectDataPositionsToCreate(worldData, allChunkDataPositionsNeeded, playerPosition);
 
@@ -202,4 +226,4 @@ namespace SunnyValleyStudio
 // Source: S2 - P15 https://www.youtube.com/watch?v=qOcJDH0FfsY&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=15&ab_channel=SunnyValleyStudio
 // Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
-
+// Source: S3 - P1 Intro to multithreading https://www.youtube.com/watch?v=oWFJl56IL4Y&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=1&ab_channel=SunnyValleyStudio
