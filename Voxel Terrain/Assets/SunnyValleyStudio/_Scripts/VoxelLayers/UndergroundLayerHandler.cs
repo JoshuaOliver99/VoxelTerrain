@@ -11,8 +11,8 @@ namespace SunnyValleyStudio
         {
             if (y < surfaceHeightNoise)
             {
-                Vector3Int pos = new Vector3Int(x, y, z);
-                Chunk.SetVoxel(chunkData, pos, undergroundBlockType);
+                Vector3Int localPos = new Vector3Int(x, y - chunkData.worldPosition.y, z); // Note: converting y to chunk coordinates
+                Chunk.SetVoxel(chunkData, localPos, undergroundBlockType);
 
                 return true;
             }

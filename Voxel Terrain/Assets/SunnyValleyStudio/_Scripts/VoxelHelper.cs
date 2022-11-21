@@ -24,9 +24,10 @@ namespace SunnyValleyStudio
 
             foreach (Direction direction in directions)
             {
-                var neighbourVoxelCoordinates = new Vector3Int(x, y, z) + direction.GetVector();
-                var neighbourVoxelType = Chunk.GetVoxelFromChunkCoordinates(chunk, neighbourVoxelCoordinates);
+                Vector3Int neighbourVoxelCoordinates = new Vector3Int(x, y, z) + direction.GetVector();
+                VoxelType neighbourVoxelType = Chunk.GetVoxelFromChunkCoordinates(chunk, neighbourVoxelCoordinates);
 
+                // if (neighbour... is something & isnt solid)
                 if (neighbourVoxelType != VoxelType.Nothing 
                     && VoxelDataManager.voxelTextureDataDictionary[neighbourVoxelType].isSolid == false)
                 {
@@ -57,7 +58,7 @@ namespace SunnyValleyStudio
         public static Vector2[] FaceUVs(Direction direction, VoxelType voxelType)
         {
             Vector2[] UVs = new Vector2[4];
-            var tilePos = TexturePosition(direction, voxelType);
+            Vector2Int tilePos = TexturePosition(direction, voxelType);
 
             UVs[0] = new Vector2(VoxelDataManager.tileSezeX * tilePos.x + VoxelDataManager.tileSezeX - VoxelDataManager.textureOffset,
                 VoxelDataManager.tileSezeY * tilePos.y + VoxelDataManager.textureOffset);
@@ -76,7 +77,7 @@ namespace SunnyValleyStudio
 
         public static void GetFaceVertices(Direction direction, int x, int y, int z, MeshData meshData, VoxelType voxelType)
         {
-            var generatesCollider = VoxelDataManager.voxelTextureDataDictionary[voxelType].generatesCollider;
+            bool generatesCollider = VoxelDataManager.voxelTextureDataDictionary[voxelType].generatesCollider;
 
             switch (direction)
             {
@@ -131,4 +132,4 @@ namespace SunnyValleyStudio
     }
 }
 
-// Source: https://www.youtube.com/watch?v=QTbyfcUYbcg&ab_channel=SunnyValleyStudio 
+// Source: S1 - P10 Block Helper https://www.youtube.com/watch?v=QTbyfcUYbcg&ab_channel=SunnyValleyStudio 
