@@ -110,7 +110,7 @@ namespace SunnyValleyStudio
                 neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition - Vector3Int.right));
             if (chunkPosition.x == chunkData.chunkSize - 1)
                 neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition + Vector3Int.right));
-
+            
             if (chunkPosition.y == 0)
                 neighboursToUpdate.Add(WorldDataHelper.GetChunkData(chunkData.worldReference, worldPosition - Vector3Int.up));
             if (chunkPosition.y == chunkData.chunkHeight - 1)
@@ -143,7 +143,7 @@ namespace SunnyValleyStudio
             {
                 x = Mathf.FloorToInt(x / (float)world.chunkSize) * world.chunkSize,
                 y = Mathf.FloorToInt(y / (float)world.chunkHeight) * world.chunkHeight,
-                z = Mathf.FloorToInt(z / (float)world.chunkSize) * world.chunkSize,
+                z = Mathf.FloorToInt(z / (float)world.chunkSize) * world.chunkSize
             };
             return pos;
         }

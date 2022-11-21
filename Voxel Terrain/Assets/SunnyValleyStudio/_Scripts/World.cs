@@ -81,7 +81,7 @@ namespace SunnyValleyStudio
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
             // Hardcoded...
             ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
-            if (chunk == false)
+            if (chunk == null)
                 return false;
 
             Vector3Int pos = GetVoxelPos(hit);
@@ -94,14 +94,8 @@ namespace SunnyValleyStudio
                 List<ChunkData> neighbourDataList = Chunk.GetEdgeNeighbourChunk(chunk.ChunkData, pos);
                 foreach (ChunkData neighbourData in neighbourDataList)
                 {
-                    // NOTE: BUG: it seems like chunks < 0 are not getting spawned
-                    print($"TEST FAILING > {neighbourData.worldPosition}");
-                    print($"TEST FAILING > {neighbourData.worldReference.name}");
-
                     //neighbourData.modifiedByThePlayer = true;
                     ChunkRenderer chunkToUpdate = WorldDataHelper.GetChunk(neighbourData.worldReference, neighbourData.worldPosition);
-
-                    print($"TEST FAILING > {neighbourData}");
 
                     if (chunkToUpdate != null)
                         chunkToUpdate.UpdateChunk();
@@ -155,7 +149,7 @@ namespace SunnyValleyStudio
                 chunkPositionsToCreate = chunkPositionsToCreate,
                 chunkDataPositionsToCreate = chunkDataPositionsToCreate,
                 chunkPositionsToRemove = chunkPositionsToRemove,
-                chunkDataToRemove = chunkDataToRemove
+                chunkDataToRemove = chunkDataToRemove,
             };
             return data;
         }
@@ -172,7 +166,7 @@ namespace SunnyValleyStudio
             Vector3Int pos = Chunk.ChunkPositionFromBlockCoords(this, x, y, z);
             ChunkData containerChunk = null;
 
-            worldData.chunkDataDictionary   .TryGetValue(pos, out containerChunk);
+            worldData.chunkDataDictionary.TryGetValue(pos, out containerChunk);
 
             if (containerChunk == null)
                 return VoxelType.Nothing;

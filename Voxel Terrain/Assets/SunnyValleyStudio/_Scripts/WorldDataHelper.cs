@@ -36,7 +36,7 @@ namespace SunnyValleyStudio
                     if (x >= playerPosition.x - world.chunkSize &&
                         x <= playerPosition.x + world.chunkSize &&
                         z >= playerPosition.z - world.chunkSize &&
-                        z >= playerPosition.z + world.chunkSize)
+                        z <= playerPosition.z + world.chunkSize)
                     {
                         for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
                         {
@@ -82,7 +82,7 @@ namespace SunnyValleyStudio
                     if (x >= playerPosition.x - world.chunkSize &&
                         x <= playerPosition.x + world.chunkSize &&
                         z >= playerPosition.z - world.chunkSize &&
-                        z >= playerPosition.z + world.chunkSize)
+                        z <= playerPosition.z + world.chunkSize)
                     {
                         for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
                         {
@@ -98,14 +98,8 @@ namespace SunnyValleyStudio
 
         internal static ChunkRenderer GetChunk(World worldReference, Vector3Int worldPosition)
         {
-            Debug.Log("TEST1");
-
             if (worldReference.worldData.chunkDictionary.ContainsKey(worldPosition))
-            {
-                Debug.Log("TEST2");
                 return worldReference.worldData.chunkDictionary[worldPosition];
-            }
-            Debug.Log("TEST3");
             
             return null;
         }
