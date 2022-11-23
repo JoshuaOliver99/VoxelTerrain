@@ -1050,7 +1050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ab03a93ad88d24e8077a1847945bfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 116692708104115924, guid: 63587f43386e08146be3cd103948ef14, type: 3}
+  playerPrefab: {fileID: 116692708104115924, guid: d43e9bef6cf8dc74dbbc13269406cc57, type: 3}
   currentPlayerChunkPosition: {x: 0, y: 0, z: 0}
   world: {fileID: 1342706957}
   detectionTime: 1
@@ -1148,7 +1148,7 @@ MonoBehaviour:
   mapSizeChunks: 32
   chunkSize: 16
   chunkHeight: 64
-  chunkDrawingRange: 16
+  chunkDrawingRange: 8
   chunkPrefab: {fileID: 1340369880756562023, guid: c9a03e8e5378aa247ae85388db759e86, type: 3}
   terrainGenerator: {fileID: 2061303563}
   mapSeedOffset: {x: 0, y: 0}

@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -37,44 +40,82 @@ namespace SunnyValleyStudio
             };
         }
 
-        public void GenerateWorld()
+        public async void GenerateWorld()
         {
-            GenerateWorld(Vector3Int.zero);
+            await GenerateWorld(Vector3Int.zero);
         }
 
-        private void GenerateWorld(Vector3Int position)
+        private async Task GenerateWorld(Vector3Int position)
         {
-            WorldGenerationData worldGenerationData = GetPositionsThatPlayerSees(position);
+            WorldGenerationData worldGenerationData = await Task.Run(() => GetPositionsThatPlayerSees(position));
+
 
             // Remove the old chunks...
             foreach (Vector3Int pos in worldGenerationData.chunkPositionsToRemove)
                 WorldDataHelper.RemoveChunk(this, pos);
 
+
             // Remove the old chunks data...
             foreach (Vector3Int pos in worldGenerationData.chunkDataToRemove)
                 WorldDataHelper.RemoveChunkData(this, pos);
 
+
             // Generate the ChunkData...
-            foreach (Vector3Int pos in worldGenerationData.chunkDataPositionsToCreate)
+            ConcurrentDictionary<Vector3Int, ChunkData> dataDictionary 
+                = await CalculateWorldChunkData(worldGenerationData.chunkDataPositionsToCreate);
+
+            foreach (KeyValuePair<Vector3Int, ChunkData> calculatedData in dataDictionary)
             {
-                ChunkData data = new ChunkData(chunkSize, chunkHeight, this, pos);
-                ChunkData newData = terrainGenerator.GenerateChunkData(data, mapSeedOffset);
-                worldData.chunkDataDictionary.Add(pos, newData);
+                worldData.chunkDataDictionary.Add(calculatedData.Key, calculatedData.Value);
             }
 
+
             // Generate the MeshData...
-            Dictionary<Vector3Int, MeshData> meshDataDictionary = new Dictionary<Vector3Int, MeshData>();
-            foreach (Vector3Int pos in worldGenerationData.chunkPositionsToCreate)
-            {
-                ChunkData data = worldData.chunkDataDictionary[pos];
-                MeshData meshData = Chunk.GetChunkMeshData(data);
-                meshDataDictionary.Add(pos, meshData);   
-            }
+            ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
+
+            List<ChunkData> dataToRender = worldData.chunkDataDictionary
+                .Where(KeyValuePair => worldGenerationData.chunkPositionsToCreate.Contains(KeyValuePair.Key))
+                .Select(keyValuePair => keyValuePair.Value)
+                .ToList();
+
+            meshDataDictionary = await CreateMeshDataAsync(dataToRender);
+
 
             StartCoroutine(ChunkCreationCoroutine(meshDataDictionary));
         }
 
-        IEnumerator ChunkCreationCoroutine(Dictionary<Vector3Int, MeshData> meshDataDictionary)
+        private Task<ConcurrentDictionary<Vector3Int, MeshData>> CreateMeshDataAsync(List<ChunkData> dataToRender)
+        {
+            ConcurrentDictionary<Vector3Int, MeshData> dictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
+
+            return Task.Run(() =>
+            {
+                foreach (ChunkData data in dataToRender)
+                {
+                    MeshData meshData = Chunk.GetChunkMeshData(data);
+                    dictionary.TryAdd(data.worldPosition, meshData);
+                }
+                return dictionary;
+            });
+        }
+
+        private Task<ConcurrentDictionary<Vector3Int, ChunkData>> CalculateWorldChunkData(List<Vector3Int> chunkDataPositionsToCreate)
+        {
+            ConcurrentDictionary<Vector3Int, ChunkData> dictionary = new ConcurrentDictionary<Vector3Int, ChunkData>();
+
+            return Task.Run(() =>
+            {
+                foreach (Vector3Int pos in chunkDataPositionsToCreate)
+                {
+                    ChunkData data = new ChunkData(chunkSize, chunkHeight, this, pos);
+                    ChunkData newData = terrainGenerator.GenerateChunkData(data, mapSeedOffset);
+                    dictionary.TryAdd(pos, newData);
+                }
+                return dictionary;
+            });
+        }
+
+        IEnumerator ChunkCreationCoroutine(ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary)
         {
             foreach (var item in meshDataDictionary)
             {
@@ -178,10 +219,10 @@ namespace SunnyValleyStudio
             return data;
         }
 
-        internal void LoadAdditionalChunkRequest(GameObject player)
+        internal async void LoadAdditionalChunkRequest(GameObject player)
         {
-            Debug.Log($"[{name}] Load more chunks");
-            GenerateWorld(Vector3Int.RoundToInt(player.transform.position));
+            Debug.Log($"[{name}] Loading more chunks");
+            await GenerateWorld(Vector3Int.RoundToInt(player.transform.position));
             OnNewChunksGenerated?.Invoke();
         }
 
@@ -227,3 +268,9 @@ namespace SunnyValleyStudio
 // Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
 // Source: S3 - P1 Intro to multithreading https://www.youtube.com/watch?v=oWFJl56IL4Y&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=1&ab_channel=SunnyValleyStudio
+// Source: S3 - P2 Async & Await in Unity https://www.youtube.com/watch?v=Jgwd7IDmcSA&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
+// Source: S3 - P3 Making our code multithreaded P1 https://www.youtube.com/watch?v=RfFKm7UY2q4&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
+// Source: S3 - P4 Making our code multithreaded P2 https://www.youtube.com/watch?v=eQSZLJaiVBs&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=4&ab_channel=SunnyValleyStudio
+
+
+
