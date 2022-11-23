@@ -16,6 +16,16 @@ namespace SunnyValleyStudio
 
         public VoxelLayerHandler startLayerHandler;
 
+        public TreeGenerator treeGenerator;
+
+        internal TreeData GetTreeData(ChunkData data, Vector2Int mapSeedOffset)
+        {
+            if (treeGenerator == null)
+                return new TreeData();
+
+            return treeGenerator.GenerateTreeData(data, mapSeedOffset);
+        }
+
         public List<VoxelLayerHandler> additionalLayerHandlers;
 
         public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset)
@@ -56,6 +66,7 @@ namespace SunnyValleyStudio
 // Srouce: https://www.youtube.com/watch?v=8A-D2VZJU4c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=8&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=Pdmw3I0TjK4&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=9&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
+// Source: S3 - P8 Adding Trees P2 https://www.youtube.com/watch?v=IPjzsLV8jd8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=8&ab_channel=SunnyValleyStudio
 
 
 // Source: https://adrianb.io/2014/08/09/perlinnoise.html

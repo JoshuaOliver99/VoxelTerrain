@@ -9,13 +9,13 @@ namespace SunnyValleyStudio
 {
     public static class WorldDataHelper
     {
-        public static Vector3Int ChunkPositionFromVoxelCoords(World world, Vector3Int position)
+        public static Vector3Int ChunkPositionFromVoxelCoords(World world, Vector3Int worldPos)
         {
             return new Vector3Int
             {
-                x = Mathf.FloorToInt(position.x / (float)world.chunkSize) * world.chunkSize,
-                y = Mathf.FloorToInt(position.y / (float)world.chunkHeight) * world.chunkHeight,
-                z = Mathf.FloorToInt(position.z / (float)world.chunkSize) * world.chunkSize
+                x = Mathf.FloorToInt(worldPos.x / (float)world.chunkSize) * world.chunkSize,
+                y = Mathf.FloorToInt(worldPos.y / (float)world.chunkHeight) * world.chunkHeight,
+                z = Mathf.FloorToInt(worldPos.z / (float)world.chunkSize) * world.chunkSize
             };
         }
 
@@ -104,19 +104,19 @@ namespace SunnyValleyStudio
             return null;
         }
 
-        internal static void SetVoxel(World worldReference, Vector3Int pos, VoxelType voxelType)
+        internal static void SetVoxel(World worldReference, Vector3Int worldVoxelPos, VoxelType voxelType)
         {
-            ChunkData chunkData = GetChunkData(worldReference, pos);
+            ChunkData chunkData = GetChunkData(worldReference, worldVoxelPos);
             if (chunkData != null)
             {
-                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, pos);
+                Vector3Int localPosition = Chunk.GetVoxelInChunkCoordinates(chunkData, worldVoxelPos);
                 Chunk.SetVoxel(chunkData, localPosition, voxelType);
             }
         }
 
-        public static ChunkData GetChunkData(World worldReference, Vector3Int pos)
+        public static ChunkData GetChunkData(World worldReference, Vector3Int worldVoxelPos)
         {
-            Vector3Int chunkPosition = ChunkPositionFromVoxelCoords(worldReference, pos);
+            Vector3Int chunkPosition = ChunkPositionFromVoxelCoords(worldReference, worldVoxelPos);
 
             ChunkData containerChunk = null;
 
@@ -173,4 +173,5 @@ namespace SunnyValleyStudio
 // Source: S2 - P15 https://www.youtube.com/watch?v=qOcJDH0FfsY&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=15&ab_channel=SunnyValleyStudio
 // Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
+// Source: S3 - P9 Adding Trees P3 https://www.youtube.com/watch?v=Pth2WPDDdqI&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=9&ab_channel=SunnyValleyStudio
 

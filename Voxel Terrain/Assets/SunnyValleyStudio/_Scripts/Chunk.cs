@@ -71,7 +71,7 @@ namespace SunnyValleyStudio
             }
             else
             {
-                WorldDataHelper.SetVoxel(chunkData.worldReference, localPosition, voxel);
+                WorldDataHelper.SetVoxel(chunkData.worldReference, localPosition + chunkData.worldPosition, voxel);
             }
         }
 
@@ -154,5 +154,5 @@ namespace SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=s5mAf-VMgCM&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=L5obsaFeJPQ&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
-
+// Source: S3 - P9 Adding Trees P3 https://www.youtube.com/watch?v=Pth2WPDDdqI&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=9&ab_channel=SunnyValleyStudio
 

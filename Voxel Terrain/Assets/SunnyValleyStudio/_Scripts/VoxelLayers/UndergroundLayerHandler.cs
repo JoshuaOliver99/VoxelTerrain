@@ -23,3 +23,4 @@ namespace SunnyValleyStudio
 }
 
 // Source: https://www.youtube.com/watch?v=dupqptGrgwc&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=7&ab_channel=SunnyValleyStudio
+// Source: S3 - P10 Digging logic fix https://www.youtube.com/watch?v=z_VJomVSTN0&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=10&ab_channel=SunnyValleyStudio

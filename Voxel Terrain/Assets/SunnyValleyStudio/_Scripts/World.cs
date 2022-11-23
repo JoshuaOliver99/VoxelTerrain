@@ -86,6 +86,12 @@ namespace SunnyValleyStudio
                 worldData.chunkDataDictionary.Add(calculatedData.Key, calculatedData.Value);
             }
 
+            // Done after all chunks are generated
+            foreach (var chunkData in worldData.chunkDataDictionary.Values)
+            {
+                AddTreeLeafs(chunkData);
+            }
+
 
             // Generate the MeshData...
             ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
@@ -108,6 +114,14 @@ namespace SunnyValleyStudio
 
 
             StartCoroutine(ChunkCreationCoroutine(meshDataDictionary));
+        }
+
+        private void AddTreeLeafs(ChunkData chunkData)
+        {
+            foreach (Vector3Int treeLeafes in chunkData.treeData.treeLeafsSolid)
+            {
+                Chunk.SetVoxel(chunkData, treeLeafes, VoxelType.TreeLeavesSolid);
+            }
         }
 
         private Task<ConcurrentDictionary<Vector3Int, MeshData>> CreateMeshDataAsync(List<ChunkData> dataToRender)
@@ -301,6 +315,9 @@ namespace SunnyValleyStudio
 // Source: S3 - P4 Making our code multithreaded P2 https://www.youtube.com/watch?v=eQSZLJaiVBs&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=4&ab_channel=SunnyValleyStudio
 // Source: S3 - P5 Stopping async Tasks https://www.youtube.com/watch?v=Wyl5vE-5-2I&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=5&ab_channel=SunnyValleyStudio
 // Source: S3 - P6 Object Pooling chunks https://www.youtube.com/watch?v=qc73lfMirw8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=6&ab_channel=SunnyValleyStudio
+// Source: S3 - P9 Adding Trees P3 https://www.youtube.com/watch?v=Pth2WPDDdqI&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=9&ab_channel=SunnyValleyStudio
+
+
 // Source: https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0
 // Source: https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-cancellation
 

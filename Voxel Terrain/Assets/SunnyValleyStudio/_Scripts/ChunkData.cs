@@ -14,6 +14,7 @@ namespace SunnyValleyStudio
         public Vector3Int worldPosition;
 
         public bool modifiedByThePlayer = false; // NOTE: potential rename "ChunkDirty"?
+        public TreeData treeData;
 
         public ChunkData(int chunkSize, int chunkHeight, World world, Vector3Int worldPosition)        {
             this.chunkSize = chunkSize; // NOTE: SunnyValleyStudio has these swapped...
@@ -27,3 +28,7 @@ namespace SunnyValleyStudio
 }
 
 // Source: https://www.youtube.com/watch?v=OObDevIzwcQ&ab_channel=SunnyValleyStudio
+// Source: S3 - P7 Adding Trees P1 https://www.youtube.com/watch?v=iifH1zHjxA4&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=8&ab_channel=SunnyValleyStudio
+// Source: S3 - P8 Adding Trees P2 https://www.youtube.com/watch?v=IPjzsLV8jd8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=8&ab_channel=SunnyValleyStudio
+
+
