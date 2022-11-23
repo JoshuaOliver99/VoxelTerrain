@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,9 +18,12 @@ namespace SunnyValleyStudio
         public int chunkDrawingRange = 8;
 
         public GameObject chunkPrefab;
+        public WorldRenderer worldRenderer;
 
         public TerrainGenerator terrainGenerator;
         public Vector2Int mapSeedOffset;
+
+        CancellationTokenSource taskTokenSource = new CancellationTokenSource();
 
         //Dictionary<Vector3Int, ChunkData> chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>();
         //Dictionary<Vector3Int, ChunkRenderer> chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>();
@@ -40,6 +44,11 @@ namespace SunnyValleyStudio
             };
         }
 
+        public void OnDisable()
+        {
+            taskTokenSource.Cancel();
+        }
+
         public async void GenerateWorld()
         {
             await GenerateWorld(Vector3Int.zero);
@@ -47,7 +56,7 @@ namespace SunnyValleyStudio
 
         private async Task GenerateWorld(Vector3Int position)
         {
-            WorldGenerationData worldGenerationData = await Task.Run(() => GetPositionsThatPlayerSees(position));
+            WorldGenerationData worldGenerationData = await Task.Run(() => GetPositionsThatPlayerSees(position), taskTokenSource.Token);
 
 
             // Remove the old chunks...
@@ -61,8 +70,16 @@ namespace SunnyValleyStudio
 
 
             // Generate the ChunkData...
-            ConcurrentDictionary<Vector3Int, ChunkData> dataDictionary 
-                = await CalculateWorldChunkData(worldGenerationData.chunkDataPositionsToCreate);
+            ConcurrentDictionary<Vector3Int, ChunkData> dataDictionary = null;
+            try
+            {
+                dataDictionary = await CalculateWorldChunkData(worldGenerationData.chunkDataPositionsToCreate);
+            }
+            catch (Exception)
+            {
+                Debug.Log("CalculateWorldChunkData Task Canceled");
+                return;
+            }
 
             foreach (KeyValuePair<Vector3Int, ChunkData> calculatedData in dataDictionary)
             {
@@ -78,7 +95,16 @@ namespace SunnyValleyStudio
                 .Select(keyValuePair => keyValuePair.Value)
                 .ToList();
 
-            meshDataDictionary = await CreateMeshDataAsync(dataToRender);
+            try
+            {
+                meshDataDictionary = await CreateMeshDataAsync(dataToRender);
+            }
+            catch (Exception)
+            {
+                Debug.Log("CreateMeshDataAsync Task Canceled");
+                return;
+            }
+
 
 
             StartCoroutine(ChunkCreationCoroutine(meshDataDictionary));
@@ -92,11 +118,15 @@ namespace SunnyValleyStudio
             {
                 foreach (ChunkData data in dataToRender)
                 {
+                    if (taskTokenSource.Token.IsCancellationRequested)
+                        taskTokenSource.Token.ThrowIfCancellationRequested();
+
                     MeshData meshData = Chunk.GetChunkMeshData(data);
                     dictionary.TryAdd(data.worldPosition, meshData);
                 }
                 return dictionary;
-            });
+            },
+            taskTokenSource.Token);
         }
 
         private Task<ConcurrentDictionary<Vector3Int, ChunkData>> CalculateWorldChunkData(List<Vector3Int> chunkDataPositionsToCreate)
@@ -107,12 +137,16 @@ namespace SunnyValleyStudio
             {
                 foreach (Vector3Int pos in chunkDataPositionsToCreate)
                 {
+                    if (taskTokenSource.Token.IsCancellationRequested)
+                        taskTokenSource.Token.ThrowIfCancellationRequested();
+
                     ChunkData data = new ChunkData(chunkSize, chunkHeight, this, pos);
                     ChunkData newData = terrainGenerator.GenerateChunkData(data, mapSeedOffset);
                     dictionary.TryAdd(pos, newData);
                 }
                 return dictionary;
-            });
+            }, 
+            taskTokenSource.Token);
         }
 
         IEnumerator ChunkCreationCoroutine(ConcurrentDictionary<Vector3Int, MeshData> meshDataDictionary)
@@ -134,11 +168,8 @@ namespace SunnyValleyStudio
 
         private void CreateChunk(WorldData worldData, Vector3Int worldPos, MeshData meshData)
         {
-            GameObject chunkObject = Instantiate(chunkPrefab, worldPos, Quaternion.identity);
-            ChunkRenderer chunkRenderer = chunkObject.GetComponent<ChunkRenderer>();
+            ChunkRenderer chunkRenderer = worldRenderer.RenderChunk(worldData, worldPos, meshData);
             worldData.chunkDictionary.Add(worldPos, chunkRenderer);
-            chunkRenderer.InitializeChunk(worldData.chunkDataDictionary[worldPos]);
-            chunkRenderer.UpdateChunk(meshData);
         }
 
         internal bool SetVoxel(RaycastHit hit, VoxelType voxelType)
@@ -193,11 +224,6 @@ namespace SunnyValleyStudio
             return (float)pos;
         }
 
-        internal void RemoveChunk(ChunkRenderer chunk)
-        {
-            chunk.gameObject.SetActive(false);
-        }
-
         private WorldGenerationData GetPositionsThatPlayerSees(Vector3Int playerPosition)
         {
             List<Vector3Int> allChunkPositionsNeeded = WorldDataHelper.GetChunkPositionsAroundPlayer(this, playerPosition);
@@ -247,16 +273,18 @@ namespace SunnyValleyStudio
             public List<Vector3Int> chunkPositionsToRemove;
             public List<Vector3Int> chunkDataToRemove;
         }
+    }
 
-        public struct WorldData
-        {
-            public Dictionary<Vector3Int, ChunkData> chunkDataDictionary;
-            public Dictionary<Vector3Int, ChunkRenderer> chunkDictionary;
-            public int chunkSize;
-            public int chunkHeight;
-        }
+    public struct WorldData
+    {
+        public Dictionary<Vector3Int, ChunkData> chunkDataDictionary;
+        public Dictionary<Vector3Int, ChunkRenderer> chunkDictionary;
+        public int chunkSize;
+        public int chunkHeight;
     }
 }
+
+
 
 // Source: https://www.youtube.com/watch?v=OObDevIzwcQ&ab_channel=SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=L5obsaFeJPQ&ab_channel=SunnyValleyStudio
@@ -271,6 +299,10 @@ namespace SunnyValleyStudio
 // Source: S3 - P2 Async & Await in Unity https://www.youtube.com/watch?v=Jgwd7IDmcSA&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
 // Source: S3 - P3 Making our code multithreaded P1 https://www.youtube.com/watch?v=RfFKm7UY2q4&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
 // Source: S3 - P4 Making our code multithreaded P2 https://www.youtube.com/watch?v=eQSZLJaiVBs&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=4&ab_channel=SunnyValleyStudio
+// Source: S3 - P5 Stopping async Tasks https://www.youtube.com/watch?v=Wyl5vE-5-2I&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=5&ab_channel=SunnyValleyStudio
+// Source: S3 - P6 Object Pooling chunks https://www.youtube.com/watch?v=qc73lfMirw8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=6&ab_channel=SunnyValleyStudio
+// Source: https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0
+// Source: https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-cancellation
 
 
 
