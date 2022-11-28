@@ -28,10 +28,15 @@ namespace SunnyValleyStudio
 
         public List<VoxelLayerHandler> additionalLayerHandlers;
 
-        public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset)
+        public ChunkData ProcessChunkColumn(ChunkData data, int x, int z, Vector2Int mapSeedOffset, int? terrainHeightNoise)
         {
             biomeNoiseData.worldOffset = mapSeedOffset;
-            int groundPosition = GetSurfaceHeightNoise(data.worldPosition.x + x, data.worldPosition.z + z, data.chunkHeight);
+
+            int groundPosition;
+            if (terrainHeightNoise.HasValue == false) 
+                groundPosition = GetSurfaceHeightNoise(data.worldPosition.x + x, data.worldPosition.z + z, data.chunkHeight);
+            else
+                groundPosition = terrainHeightNoise.Value;
 
             for (int y = data.worldPosition.y; y < data.worldPosition.y + data.chunkHeight; y++)
             {
@@ -45,7 +50,7 @@ namespace SunnyValleyStudio
             return data;
         }
 
-        private int GetSurfaceHeightNoise(int x, int z, int chunkHeight)
+        public int GetSurfaceHeightNoise(int x, int z, int chunkHeight)
         {
             float terrainHeight;
             if (useDomainWarping == false)
@@ -67,7 +72,7 @@ namespace SunnyValleyStudio
 // Source: https://www.youtube.com/watch?v=Pdmw3I0TjK4&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=9&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
 // Source: S3 - P8 Adding Trees P2 https://www.youtube.com/watch?v=IPjzsLV8jd8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=8&ab_channel=SunnyValleyStudio
-
+// Source: S3 - P14 Biome selection algorithm P2 https://www.youtube.com/watch?v=OiwjJ9UI9KM&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=14&ab_channel=SunnyValleyStudio
 
 // Source: https://adrianb.io/2014/08/09/perlinnoise.html
 // Source: http://www.nolithius.com/articles/world-generation/world-generation-techniques-domain-warping

@@ -56,6 +56,8 @@ namespace SunnyValleyStudio
 
         private async Task GenerateWorld(Vector3Int position)
         {
+            terrainGenerator.GenerateBiomePoints(position, chunkDrawingRange, chunkSize, mapSeedOffset);
+
             WorldGenerationData worldGenerationData = await Task.Run(() => GetPositionsThatPlayerSees(position), taskTokenSource.Token);
 
 
@@ -316,6 +318,8 @@ namespace SunnyValleyStudio
 // Source: S3 - P5 Stopping async Tasks https://www.youtube.com/watch?v=Wyl5vE-5-2I&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=5&ab_channel=SunnyValleyStudio
 // Source: S3 - P6 Object Pooling chunks https://www.youtube.com/watch?v=qc73lfMirw8&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=6&ab_channel=SunnyValleyStudio
 // Source: S3 - P9 Adding Trees P3 https://www.youtube.com/watch?v=Pth2WPDDdqI&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=9&ab_channel=SunnyValleyStudio
+// Source: S3 - P11 Different biomes theory https://www.youtube.com/watch?v=NIiREmJnAX0&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=12&ab_channel=SunnyValleyStudio
+
 
 
 // Source: https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0
