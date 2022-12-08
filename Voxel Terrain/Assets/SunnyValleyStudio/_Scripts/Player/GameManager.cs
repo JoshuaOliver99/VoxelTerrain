@@ -23,7 +23,7 @@ namespace SunnyValleyStudio
             if (player != null)
                 return;
 
-            Vector3Int raycastStartPosition = new Vector3Int(world.chunkSize / 2, 100, world.chunkSize / 2);
+            Vector3Int raycastStartPosition = new Vector3Int(world.WorldSettings.ChunkSize / 2, 100, world.WorldSettings.ChunkSize / 2);
             RaycastHit hit;
             if (Physics.Raycast(raycastStartPosition, Vector3.down, out hit, 120))
             {
@@ -43,9 +43,9 @@ namespace SunnyValleyStudio
         IEnumerator CheckIfShouldLoadNextPosition()
         {
             yield return new WaitForSeconds(detectionTime);
-            if (Mathf.Abs(currentChunkCentre.x - player.transform.position.x) > world.chunkSize ||
-                Mathf.Abs(currentChunkCentre.z - player.transform.position.z) > world.chunkSize ||
-                (Mathf.Abs(currentPlayerChunkPosition.y - player.transform.position.y) > world.chunkHeight))
+            if (Mathf.Abs(currentChunkCentre.x - player.transform.position.x) > world.WorldSettings.ChunkSize ||
+                Mathf.Abs(currentChunkCentre.z - player.transform.position.z) > world.WorldSettings.ChunkSize ||
+                (Mathf.Abs(currentPlayerChunkPosition.y - player.transform.position.y) > world.WorldSettings.ChunkHeight))
             {
                 world.LoadAdditionalChunkRequest(player);
             }
@@ -59,8 +59,8 @@ namespace SunnyValleyStudio
         private void SetCurrentChunkCoordinated()
         {
             currentPlayerChunkPosition = WorldDataHelper.ChunkPositionFromVoxelCoords(world, Vector3Int.RoundToInt(player.transform.position));
-            currentChunkCentre.x = currentPlayerChunkPosition.x + world.chunkSize / 2;
-            currentChunkCentre.z = currentPlayerChunkPosition.z + world.chunkSize / 2;
+            currentChunkCentre.x = currentPlayerChunkPosition.x + world.WorldSettings.ChunkSize / 2;
+            currentChunkCentre.z = currentPlayerChunkPosition.z + world.WorldSettings.ChunkSize / 2;
         }
     }
 }

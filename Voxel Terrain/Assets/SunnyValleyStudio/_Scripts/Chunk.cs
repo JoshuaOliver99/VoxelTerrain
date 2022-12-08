@@ -141,9 +141,9 @@ namespace SunnyValleyStudio
         {
             Vector3Int pos = new Vector3Int
             {
-                x = Mathf.FloorToInt(x / (float)world.chunkSize) * world.chunkSize,
-                y = Mathf.FloorToInt(y / (float)world.chunkHeight) * world.chunkHeight,
-                z = Mathf.FloorToInt(z / (float)world.chunkSize) * world.chunkSize
+                x = Mathf.FloorToInt(x / (float)world.WorldSettings.ChunkSize) * world.WorldSettings.ChunkSize,
+                y = Mathf.FloorToInt(y / (float)world.WorldSettings.ChunkHeight) * world.WorldSettings.ChunkHeight,
+                z = Mathf.FloorToInt(z / (float)world.WorldSettings.ChunkSize) * world.WorldSettings.ChunkSize
             };
             return pos;
         }

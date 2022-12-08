@@ -13,32 +13,32 @@ namespace SunnyValleyStudio
         {
             return new Vector3Int
             {
-                x = Mathf.FloorToInt(worldPos.x / (float)world.chunkSize) * world.chunkSize,
-                y = Mathf.FloorToInt(worldPos.y / (float)world.chunkHeight) * world.chunkHeight,
-                z = Mathf.FloorToInt(worldPos.z / (float)world.chunkSize) * world.chunkSize
+                x = Mathf.FloorToInt(worldPos.x / (float)world.WorldSettings.ChunkSize) * world.WorldSettings.ChunkSize,
+                y = Mathf.FloorToInt(worldPos.y / (float)world.WorldSettings.ChunkHeight) * world.WorldSettings.ChunkHeight,
+                z = Mathf.FloorToInt(worldPos.z / (float)world.WorldSettings.ChunkSize) * world.WorldSettings.ChunkSize
             };
         }
 
         internal static List<Vector3Int> GetChunkPositionsAroundPlayer(World world, Vector3Int playerPosition)
         {
-            int startX = playerPosition.x - (world.chunkDrawingRange) * world.chunkSize;
-            int startZ = playerPosition.z - (world.chunkDrawingRange) * world.chunkSize;
-            int endX = playerPosition.x + (world.chunkDrawingRange) * world.chunkSize;
-            int endZ = playerPosition.z + (world.chunkDrawingRange) * world.chunkSize;
+            int startX = playerPosition.x - (world.WorldSettings.ChunkDrawingRange) * world.WorldSettings.ChunkSize;
+            int startZ = playerPosition.z - (world.WorldSettings.ChunkDrawingRange) * world.WorldSettings.ChunkSize;
+            int endX = playerPosition.x + (world.WorldSettings.ChunkDrawingRange) * world.WorldSettings.ChunkSize;
+            int endZ = playerPosition.z + (world.WorldSettings.ChunkDrawingRange) * world.WorldSettings.ChunkSize;
 
             List<Vector3Int> chunkPositionsToCreate = new List<Vector3Int>();
-            for (int x = startX; x <= endX; x += world.chunkSize)
+            for (int x = startX; x <= endX; x += world.WorldSettings.ChunkSize)
             {
-                for (int z = startZ; z <= endZ; z += world.chunkSize)
+                for (int z = startZ; z <= endZ; z += world.WorldSettings.ChunkSize)
                 {
                     Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
                     chunkPositionsToCreate.Add(chunkPos);
-                    if (x >= playerPosition.x - world.chunkSize &&
-                        x <= playerPosition.x + world.chunkSize &&
-                        z >= playerPosition.z - world.chunkSize &&
-                        z <= playerPosition.z + world.chunkSize)
+                    if (x >= playerPosition.x - world.WorldSettings.ChunkSize &&
+                        x <= playerPosition.x + world.WorldSettings.ChunkSize &&
+                        z >= playerPosition.z - world.WorldSettings.ChunkSize &&
+                        z <= playerPosition.z + world.WorldSettings.ChunkSize)
                     {
-                        for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
+                        for (int y = -world.WorldSettings.ChunkHeight; y >= playerPosition.y - world.WorldSettings.ChunkHeight * 2; y -= world.WorldSettings.ChunkHeight)
                         {
                             chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
                             chunkPositionsToCreate.Add(chunkPos);
@@ -60,31 +60,31 @@ namespace SunnyValleyStudio
             ChunkRenderer chunk = null;
             if (world.worldData.chunkDictionary.TryGetValue(pos, out chunk))
             {
-                world.worldRenderer.RemoveChunk(chunk);
+                world.WorldRenderer.RemoveChunk(chunk);
                 world.worldData.chunkDictionary.Remove(pos);
             }
         }
 
         internal static List<Vector3Int> GetDataPositionsAroundPlayer(World world, Vector3Int playerPosition)
         {
-            int startX = playerPosition.x - (world.chunkDrawingRange + 1) * world.chunkSize;
-            int startZ = playerPosition.z - (world.chunkDrawingRange + 1) * world.chunkSize;
-            int endX = playerPosition.x + (world.chunkDrawingRange + 1) * world.chunkSize;
-            int endZ = playerPosition.z + (world.chunkDrawingRange + 1) * world.chunkSize;
+            int startX = playerPosition.x - (world.WorldSettings.ChunkDrawingRange + 1) * world.WorldSettings.ChunkSize;
+            int startZ = playerPosition.z - (world.WorldSettings.ChunkDrawingRange + 1) * world.WorldSettings.ChunkSize;
+            int endX = playerPosition.x + (world.WorldSettings.ChunkDrawingRange + 1) * world.WorldSettings.ChunkSize;
+            int endZ = playerPosition.z + (world.WorldSettings.ChunkDrawingRange + 1) * world.WorldSettings.ChunkSize;
 
             List<Vector3Int> chunkDataPosiionsToCreate = new List<Vector3Int>();
-            for (int x = startX; x <= endX; x += world.chunkSize)
+            for (int x = startX; x <= endX; x += world.WorldSettings.ChunkSize)
             {
-                for (int z = startZ; z <= endZ; z += world.chunkSize)
+                for (int z = startZ; z <= endZ; z += world.WorldSettings.ChunkSize)
                 {
                     Vector3Int chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, 0, z));
                     chunkDataPosiionsToCreate.Add(chunkPos);
-                    if (x >= playerPosition.x - world.chunkSize &&
-                        x <= playerPosition.x + world.chunkSize &&
-                        z >= playerPosition.z - world.chunkSize &&
-                        z <= playerPosition.z + world.chunkSize)
+                    if (x >= playerPosition.x - world.WorldSettings.ChunkSize &&
+                        x <= playerPosition.x + world.WorldSettings.ChunkSize &&
+                        z >= playerPosition.z - world.WorldSettings.ChunkSize &&
+                        z <= playerPosition.z + world.WorldSettings.ChunkSize)
                     {
-                        for (int y = -world.chunkHeight; y >= playerPosition.y - world.chunkHeight * 2; y -= world.chunkHeight)
+                        for (int y = -world.WorldSettings.ChunkHeight; y >= playerPosition.y - world.WorldSettings.ChunkHeight * 2; y -= world.WorldSettings.ChunkHeight)
                         {
                             chunkPos = ChunkPositionFromVoxelCoords(world, new Vector3Int(x, y, z));
                             chunkDataPosiionsToCreate.Add(chunkPos);

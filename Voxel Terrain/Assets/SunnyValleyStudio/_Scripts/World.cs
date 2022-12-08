@@ -10,44 +10,56 @@ using UnityEngine.Events;
 
 namespace SunnyValleyStudio
 {
+    [RequireComponent(typeof(WorldRenderer))]
     public class World : MonoBehaviour
     {
-        public int mapSizeChunks = 6;
-        public int chunkSize = 16;
-        public int chunkHeight = 100;
-        public int chunkDrawingRange = 8;
+        [Header("Settings")]
+        [SerializeField, Tooltip("")]
+        private WorldSettingsSO worldSettings;
+        public WorldSettingsSO WorldSettings { get => worldSettings; }
 
-        public GameObject chunkPrefab;
-        public WorldRenderer worldRenderer;
 
-        public TerrainGenerator terrainGenerator;
-        public Vector2Int mapSeedOffset;
+        //[SerializeField]
+        //private GameObject chunkPrefab; // Note: Seemingly unused here
 
-        CancellationTokenSource taskTokenSource = new CancellationTokenSource();
+        [Header("References")]
+        private WorldRenderer worldRenderer;
+        public WorldRenderer WorldRenderer { get => worldRenderer; }
+        
+        [SerializeField]
+        private TerrainGenerator terrainGenerator;
 
-        //Dictionary<Vector3Int, ChunkData> chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>();
-        //Dictionary<Vector3Int, ChunkRenderer> chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>();
 
-        public UnityEvent OnWorldCreated, OnNewChunksGenerated;
-
+        [Header("Data")]
+        [Tooltip("")]
+        private CancellationTokenSource taskTokenSource = new CancellationTokenSource();
         public WorldData worldData { get; private set; }
         public bool IsWorldCreated { get; private set; }
 
+
+        [Header("Unity Events")]
+        public UnityEvent OnWorldCreated;
+        public UnityEvent OnNewChunksGenerated;
+
+
         private void Awake()
         {
+            worldRenderer = GetComponent<WorldRenderer>();
+
             worldData = new WorldData
             {
-                chunkHeight = this.chunkHeight,
-                chunkSize = this.chunkSize,
+                chunkHeight = worldSettings.ChunkHeight,
+                chunkSize = worldSettings.ChunkSize,
                 chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>(),
                 chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>()
             };
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             taskTokenSource.Cancel();
         }
+
 
         public async void GenerateWorld()
         {
@@ -56,7 +68,7 @@ namespace SunnyValleyStudio
 
         private async Task GenerateWorld(Vector3Int position)
         {
-            terrainGenerator.GenerateBiomePoints(position, chunkDrawingRange, chunkSize, mapSeedOffset);
+            terrainGenerator.GenerateBiomePoints(position, worldSettings.ChunkDrawingRange, worldSettings.ChunkSize, worldSettings.MapSeedOffset);
 
             WorldGenerationData worldGenerationData = await Task.Run(() => GetPositionsThatPlayerSees(position), taskTokenSource.Token);
 
@@ -88,7 +100,9 @@ namespace SunnyValleyStudio
                 worldData.chunkDataDictionary.Add(calculatedData.Key, calculatedData.Value);
             }
 
-            // Done after all chunks are generated
+
+            // Generate structures
+            // (after all chunks are generated... because these cross chunks(?))
             foreach (var chunkData in worldData.chunkDataDictionary.Values)
             {
                 AddTreeLeafs(chunkData);
@@ -128,7 +142,7 @@ namespace SunnyValleyStudio
 
         private Task<ConcurrentDictionary<Vector3Int, MeshData>> CreateMeshDataAsync(List<ChunkData> dataToRender)
         {
-            ConcurrentDictionary<Vector3Int, MeshData> dictionary = new ConcurrentDictionary<Vector3Int, MeshData>();
+            ConcurrentDictionary<Vector3Int, MeshData> dictionary = new();
 
             return Task.Run(() =>
             {
@@ -147,7 +161,7 @@ namespace SunnyValleyStudio
 
         private Task<ConcurrentDictionary<Vector3Int, ChunkData>> CalculateWorldChunkData(List<Vector3Int> chunkDataPositionsToCreate)
         {
-            ConcurrentDictionary<Vector3Int, ChunkData> dictionary = new ConcurrentDictionary<Vector3Int, ChunkData>();
+            ConcurrentDictionary<Vector3Int, ChunkData> dictionary = new();
 
             return Task.Run(() =>
             {
@@ -156,12 +170,12 @@ namespace SunnyValleyStudio
                     if (taskTokenSource.Token.IsCancellationRequested)
                         taskTokenSource.Token.ThrowIfCancellationRequested();
 
-                    ChunkData data = new ChunkData(chunkSize, chunkHeight, this, pos);
-                    ChunkData newData = terrainGenerator.GenerateChunkData(data, mapSeedOffset);
+                    ChunkData data = new(worldSettings.ChunkSize, worldSettings.ChunkHeight, this, pos);
+                    ChunkData newData = terrainGenerator.GenerateChunkData(data, worldSettings.MapSeedOffset);
                     dictionary.TryAdd(pos, newData);
                 }
                 return dictionary;
-            }, 
+            },
             taskTokenSource.Token);
         }
 
@@ -169,20 +183,18 @@ namespace SunnyValleyStudio
         {
             foreach (var item in meshDataDictionary)
             {
-                CreateChunk(worldData, item.Key, item.Value);
+                CreateChunkRenderer(worldData, item.Key, item.Value);
                 yield return new WaitForEndOfFrame();
             }
-            
+
             if (IsWorldCreated == false)
             {
                 IsWorldCreated = true;
                 OnWorldCreated?.Invoke();
             }
-
-
         }
 
-        private void CreateChunk(WorldData worldData, Vector3Int worldPos, MeshData meshData)
+        public void CreateChunkRenderer(WorldData worldData, Vector3Int worldPos, MeshData meshData)
         {
             ChunkRenderer chunkRenderer = worldRenderer.RenderChunk(worldData, worldPos, meshData);
             worldData.chunkDictionary.Add(worldPos, chunkRenderer);
@@ -191,7 +203,7 @@ namespace SunnyValleyStudio
         internal bool SetVoxel(RaycastHit hit, VoxelType voxelType)
         {
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
-            // Hardcoded...
+            // Hard coded...
             ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
             if (chunk == null)
                 return false;
@@ -218,10 +230,92 @@ namespace SunnyValleyStudio
             return true;
         }
 
+        #region Josh Tests
+        /// <summary>
+        /// TEST Josh mod 
+        /// </summary>
+        public void CreateNewChunk(RaycastHit hit, VoxelType voxelType)
+        {
+            WorldData newWorldData = new WorldData
+            {
+                chunkHeight = worldSettings.ChunkHeight,
+                chunkSize = worldSettings.ChunkSize,
+                chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>(),
+                chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>()
+            };
+
+            // Try round to nearest multiple
+            int x = (int)Math.Round((hit.point.x / (double)worldSettings.ChunkSize), MidpointRounding.AwayFromZero) * worldSettings.ChunkSize;
+            int y = (int)Math.Round((hit.point.y / (double)worldSettings.ChunkHeight), MidpointRounding.AwayFromZero) * worldSettings.ChunkHeight;
+            int z = (int)Math.Round((hit.point.z / (double)worldSettings.ChunkSize), MidpointRounding.AwayFromZero) * worldSettings.ChunkSize;
+
+            Vector3Int hitRoundedToChunk = new(x, y, z);
+            Debug.Log(hitRoundedToChunk);
+
+            ChunkData data = new ChunkData(worldSettings.ChunkSize, worldSettings.ChunkHeight, this, hitRoundedToChunk);
+
+            newWorldData.chunkDataDictionary.Add(hitRoundedToChunk, data);
+
+
+            Vector3Int newChunkPos = new Vector3Int
+            {
+                x = Mathf.RoundToInt(hit.point.x),
+                y = Mathf.RoundToInt(hit.point.y),
+                z = Mathf.RoundToInt(hit.point.z),
+            };
+
+            MeshData newMeshData = new MeshData(true);
+
+            ChunkRenderer newChunkRenderer = CreateChunkRendererAndReturn(newWorldData, newChunkPos, newMeshData);
+
+            SetVoxelOnChunk(hit, voxelType, newChunkRenderer);
+        }
+
+        internal bool SetVoxelOnChunk(RaycastHit hit, VoxelType voxelType, ChunkRenderer chunkRender)
+        {
+            // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
+            // Hard coded...
+            
+            //ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
+            //if (chunk == null)
+            //    return false;
+            
+            Vector3Int pos = GetVoxelPos(hit);
+
+            WorldDataHelper.SetVoxel(chunkRender.ChunkData.worldReference, pos, voxelType);
+            chunkRender.ModifiedByThePlayer = true;
+
+            if (Chunk.IsOnEdge(chunkRender.ChunkData, pos))
+            {
+                List<ChunkData> neighbourDataList = Chunk.GetEdgeNeighbourChunk(chunkRender.ChunkData, pos);
+                foreach (ChunkData neighbourData in neighbourDataList)
+                {
+                    //neighbourData.modifiedByThePlayer = true;
+                    ChunkRenderer chunkToUpdate = WorldDataHelper.GetChunk(neighbourData.worldReference, neighbourData.worldPosition);
+
+                    if (chunkToUpdate != null)
+                        chunkToUpdate.UpdateChunk();
+                }
+            }
+
+            chunkRender.UpdateChunk();
+            return true;
+        }
+
+        public ChunkRenderer CreateChunkRendererAndReturn(WorldData worldData, Vector3Int worldPos, MeshData meshData)
+        {
+            ChunkRenderer chunkRenderer = worldRenderer.RenderChunk(worldData, worldPos, meshData);
+            worldData.chunkDictionary.Add(worldPos, chunkRenderer);
+            return chunkRenderer;
+        }
+        #endregion
+
+
+
         private Vector3Int GetVoxelPos(RaycastHit hit)
         {
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
-            // Hardcoded...
+            // Hard coded...
             Vector3 pos = new Vector3(
                 GetVoxelPositionIn(hit.point.x, hit.normal.x),
                 GetVoxelPositionIn(hit.point.y, hit.normal.y),

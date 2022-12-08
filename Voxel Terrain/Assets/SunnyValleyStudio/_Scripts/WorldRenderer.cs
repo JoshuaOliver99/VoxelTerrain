@@ -9,6 +9,7 @@ namespace SunnyValleyStudio
     {
         public GameObject chunkPrefab;
         public Queue<ChunkRenderer> chunkPool = new Queue<ChunkRenderer>();
+
         public void Clear(WorldData worldData)
         {
             foreach (var item in worldData.chunkDictionary.Values)
