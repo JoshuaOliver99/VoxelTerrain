@@ -16,3 +16,4 @@ MonoBehaviour:
   chunkSize: 16
   chunkHeight: 64
   chunkDrawingRange: 8
+  mapSeedOffset: {x: 0, y: 0}

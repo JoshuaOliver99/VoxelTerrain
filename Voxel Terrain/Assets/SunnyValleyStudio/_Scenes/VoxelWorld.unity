@@ -1445,6 +1445,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1342706958}
   - component: {fileID: 1342706957}
+  - component: {fileID: 1342706959}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -1464,14 +1465,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ca9ec186b05204f939c166306a9eaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapSizeChunks: 32
-  chunkSize: 16
-  chunkHeight: 64
-  chunkDrawingRange: 8
-  chunkPrefab: {fileID: 1340369880756562023, guid: c9a03e8e5378aa247ae85388db759e86, type: 3}
-  worldRenderer: {fileID: 1125957780}
+  worldSettings: {fileID: 11400000, guid: e7b51a356fbb55042a083a6c632495bc, type: 2}
   terrainGenerator: {fileID: 2061303563}
-  mapSeedOffset: {x: 0, y: 0}
   OnWorldCreated:
     m_PersistentCalls:
       m_Calls:
@@ -1518,6 +1513,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1342706959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342706956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd26394a4e04ce24b970abbe2aa26e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunkPrefab: {fileID: 1340369880756562023, guid: c9a03e8e5378aa247ae85388db759e86, type: 3}
 --- !u!1 &1425109140
 GameObject:
   m_ObjectHideFlags: 0
