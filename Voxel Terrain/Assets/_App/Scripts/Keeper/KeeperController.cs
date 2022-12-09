@@ -4,9 +4,9 @@ using UnityEngine;
 using SunnyValleyStudio;
 public class KeeperController : MonoBehaviour
 {
-    [Header("Referneces")]
+    [Header("References")]
     [SerializeField, Tooltip("")]
-    private World keeperWorld;
+    private KeeperWorld keeperWorld;
 
 
     private void Update()
@@ -19,10 +19,9 @@ public class KeeperController : MonoBehaviour
             {
                 Debug.Log(hit.point);
 
-                //keeperWorld.SetVoxel(hit, VoxelType.Grass_Stone);
+                //keeperWorld.SetVoxel(hit, VoxelType.TreeLeavesSolid);
 
-
-                keeperWorld.CreateNewChunk(hit, VoxelType.Grass_Stone);
+                keeperWorld.TagVoxel(hit.point);
             }
         }
     }

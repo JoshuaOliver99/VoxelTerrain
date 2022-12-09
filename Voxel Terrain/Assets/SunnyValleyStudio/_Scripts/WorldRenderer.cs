@@ -7,8 +7,24 @@ namespace SunnyValleyStudio
 {
     public class WorldRenderer: MonoBehaviour
     {
-        public GameObject chunkPrefab;
+        [Header("References")]
+        [SerializeField]
+        private GameObject chunkPrefab;
+
+        [SerializeField, Tooltip("Where this WorldRenderer will spawn chunks.")]
+        private Transform worldParent;
+        public Transform WorldParent { get => worldParent; }
+
         public Queue<ChunkRenderer> chunkPool = new Queue<ChunkRenderer>();
+
+
+        private void Start()
+        {
+            // Error Handling
+            if (chunkPrefab == null) Debug.LogWarning($"[{name}] {nameof(chunkPrefab)} == null");
+            if (worldParent == null) Debug.LogWarning($"[{name}] {nameof(worldParent)} == null");
+        }
+
 
         public void Clear(WorldData worldData)
         {
@@ -29,7 +45,13 @@ namespace SunnyValleyStudio
             }
             else
             {
-                GameObject chunkObject = Instantiate(chunkPrefab, worldPos, Quaternion.identity);
+                GameObject chunkObject;
+
+                if (worldParent == null)
+                    chunkObject = Instantiate(chunkPrefab, worldPos, Quaternion.identity);
+                else
+                    chunkObject = Instantiate(chunkPrefab, worldPos, Quaternion.identity, worldParent);
+                
                 newChunk = chunkObject.GetComponent<ChunkRenderer>();
             }
 

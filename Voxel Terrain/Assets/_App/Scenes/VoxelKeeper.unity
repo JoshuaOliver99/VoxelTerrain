@@ -1008,7 +1008,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 576653363}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &555014966
 GameObject:
@@ -1054,7 +1054,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d3b277839db32848b778287fc1ccc0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  next: {fileID: 1958621801}
+  next: {fileID: 0}
 --- !u!1 &573211073
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,7 +1156,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1125957781}
   - {fileID: 2061303564}
   - {fileID: 539405436}
   m_Father: {fileID: 1808979021}
@@ -1219,6 +1218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 1340369880756562023, guid: c9a03e8e5378aa247ae85388db759e86, type: 3}
+  worldParent: {fileID: 1576223917}
 --- !u!1 &600659305
 GameObject:
   m_ObjectHideFlags: 0
@@ -1231,7 +1231,7 @@ GameObject:
   - component: {fileID: 600659307}
   - component: {fileID: 600659308}
   m_Layer: 0
-  m_Name: TEST TerrainGenerator
+  m_Name: KeeperTerrainGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1300,7 +1300,7 @@ GameObject:
   - component: {fileID: 641281388}
   - component: {fileID: 641281389}
   m_Layer: 0
-  m_Name: MouseClick
+  m_Name: KeeperController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1319,7 +1319,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2070801473}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &641281389
 MonoBehaviour:
@@ -1333,7 +1333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc9e49618b74774084fc66ee25f9073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keeperWorld: {fileID: 1422340343}
+  keeperWorld: {fileID: 1422340345}
 --- !u!1 &675848316
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,7 +1510,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 555014967}
-  - {fileID: 1958621800}
   m_Father: {fileID: 600659306}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1823,7 +1822,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1422340343}
+      - m_Target: {fileID: 1422340345}
         m_TargetAssemblyTypeName: SunnyValleyStudio.World, Assembly-CSharp
         m_MethodName: GenerateWorld
         m_Mode: 1
@@ -1914,6 +1913,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 755928374}
+  - {fileID: 1576223917}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1997,37 +1997,6 @@ Transform:
   m_Father: {fileID: 1808979021}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1125957779
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1125957781}
-  m_Layer: 0
-  m_Name: WorldRender
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1125957781
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125957779}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 576653363}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1321280544
 GameObject:
   m_ObjectHideFlags: 0
@@ -2083,7 +2052,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1422340342}
-  - component: {fileID: 1422340343}
+  - component: {fileID: 1422340345}
   - component: {fileID: 1422340344}
   m_Layer: 0
   m_Name: KeeperWorldView
@@ -2105,28 +2074,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2070801473}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1422340343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1422340341}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19ca9ec186b05204f939c166306a9eaa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  worldSettings: {fileID: 11400000, guid: e7b51a356fbb55042a083a6c632495bc, type: 2}
-  terrainGenerator: {fileID: 600659307}
-  OnWorldCreated:
-    m_PersistentCalls:
-      m_Calls: []
-  OnNewChunksGenerated:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1422340344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2140,6 +2089,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 1340369880756562023, guid: c9a03e8e5378aa247ae85388db759e86, type: 3}
+  worldParent: {fileID: 1422340342}
+--- !u!114 &1422340345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422340341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50f26d74025a24e4480847eda959e83e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldSettings: {fileID: 11400000, guid: e7b51a356fbb55042a083a6c632495bc, type: 2}
+  terrainGenerator: {fileID: 600659307}
+  OnWorldCreated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnNewChunksGenerated:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1425109140
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,13 +2224,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1576223916}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 910628562}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1619376013
 GameObject:
@@ -2368,51 +2338,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1958621799
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1958621800}
-  - component: {fileID: 1958621801}
-  m_Layer: 0
-  m_Name: EmptyLayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1958621800
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958621799}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 750784230}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1958621801
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1958621799}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e025d84bca4609347afea90748c19337, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  next: {fileID: 0}
 --- !u!1 &2061303562
 GameObject:
   m_ObjectHideFlags: 0
@@ -2469,7 +2394,7 @@ Transform:
   - {fileID: 763919932}
   - {fileID: 414601638}
   m_Father: {fileID: 576653363}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2061303565
 MonoBehaviour:
@@ -2528,8 +2453,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1422340342}
   - {fileID: 641281388}
+  - {fileID: 1422340342}
   - {fileID: 600659306}
   m_Father: {fileID: 0}
   m_RootOrder: 5

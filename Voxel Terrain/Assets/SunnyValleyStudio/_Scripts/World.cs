@@ -204,7 +204,16 @@ namespace SunnyValleyStudio
         {
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
             // Hard coded...
+
+            // V1
             ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
+
+            // V2
+            //Vector3Int chunkPos = WorldDataHelper.ChunkPositionFromVoxelCoords(this, new Vector3Int(Mathf.RoundToInt(hit.point.x), Mathf.RoundToInt(hit.point.y), Mathf.RoundToInt(hit.point.z)));
+            //ChunkRenderer chunk = WorldDataHelper.GetChunk(this, chunkPos);
+            //Debug.Log("chunk worldPos = " + chunk.ChunkData.worldPosition);
+
+
             if (chunk == null)
                 return false;
 
@@ -230,89 +239,7 @@ namespace SunnyValleyStudio
             return true;
         }
 
-        #region Josh Tests
-        /// <summary>
-        /// TEST Josh mod 
-        /// </summary>
-        public void CreateNewChunk(RaycastHit hit, VoxelType voxelType)
-        {
-            WorldData newWorldData = new WorldData
-            {
-                chunkHeight = worldSettings.ChunkHeight,
-                chunkSize = worldSettings.ChunkSize,
-                chunkDataDictionary = new Dictionary<Vector3Int, ChunkData>(),
-                chunkDictionary = new Dictionary<Vector3Int, ChunkRenderer>()
-            };
-
-            // Try round to nearest multiple
-            int x = (int)Math.Round((hit.point.x / (double)worldSettings.ChunkSize), MidpointRounding.AwayFromZero) * worldSettings.ChunkSize;
-            int y = (int)Math.Round((hit.point.y / (double)worldSettings.ChunkHeight), MidpointRounding.AwayFromZero) * worldSettings.ChunkHeight;
-            int z = (int)Math.Round((hit.point.z / (double)worldSettings.ChunkSize), MidpointRounding.AwayFromZero) * worldSettings.ChunkSize;
-
-            Vector3Int hitRoundedToChunk = new(x, y, z);
-            Debug.Log(hitRoundedToChunk);
-
-            ChunkData data = new ChunkData(worldSettings.ChunkSize, worldSettings.ChunkHeight, this, hitRoundedToChunk);
-
-            newWorldData.chunkDataDictionary.Add(hitRoundedToChunk, data);
-
-
-            Vector3Int newChunkPos = new Vector3Int
-            {
-                x = Mathf.RoundToInt(hit.point.x),
-                y = Mathf.RoundToInt(hit.point.y),
-                z = Mathf.RoundToInt(hit.point.z),
-            };
-
-            MeshData newMeshData = new MeshData(true);
-
-            ChunkRenderer newChunkRenderer = CreateChunkRendererAndReturn(newWorldData, newChunkPos, newMeshData);
-
-            SetVoxelOnChunk(hit, voxelType, newChunkRenderer);
-        }
-
-        internal bool SetVoxelOnChunk(RaycastHit hit, VoxelType voxelType, ChunkRenderer chunkRender)
-        {
-            // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
-            // Hard coded...
-            
-            //ChunkRenderer chunk = hit.collider.GetComponent<ChunkRenderer>();
-            //if (chunk == null)
-            //    return false;
-            
-            Vector3Int pos = GetVoxelPos(hit);
-
-            WorldDataHelper.SetVoxel(chunkRender.ChunkData.worldReference, pos, voxelType);
-            chunkRender.ModifiedByThePlayer = true;
-
-            if (Chunk.IsOnEdge(chunkRender.ChunkData, pos))
-            {
-                List<ChunkData> neighbourDataList = Chunk.GetEdgeNeighbourChunk(chunkRender.ChunkData, pos);
-                foreach (ChunkData neighbourData in neighbourDataList)
-                {
-                    //neighbourData.modifiedByThePlayer = true;
-                    ChunkRenderer chunkToUpdate = WorldDataHelper.GetChunk(neighbourData.worldReference, neighbourData.worldPosition);
-
-                    if (chunkToUpdate != null)
-                        chunkToUpdate.UpdateChunk();
-                }
-            }
-
-            chunkRender.UpdateChunk();
-            return true;
-        }
-
-        public ChunkRenderer CreateChunkRendererAndReturn(WorldData worldData, Vector3Int worldPos, MeshData meshData)
-        {
-            ChunkRenderer chunkRenderer = worldRenderer.RenderChunk(worldData, worldPos, meshData);
-            worldData.chunkDictionary.Add(worldPos, chunkRenderer);
-            return chunkRenderer;
-        }
-        #endregion
-
-
-
-        private Vector3Int GetVoxelPos(RaycastHit hit)
+        protected Vector3Int GetVoxelPos(RaycastHit hit)
         {
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
             // Hard coded...
@@ -327,7 +254,7 @@ namespace SunnyValleyStudio
         private float GetVoxelPositionIn(float pos, float normal)
         {
             // Note: S2 - P16: I dont think this implementation will work for voxels != 1m ...
-            // Hardcoded...
+            // Hard coded...
             if (Mathf.Abs(pos % 1) == 0.5f)
                 pos -= (normal / 2);
 
@@ -405,7 +332,7 @@ namespace SunnyValleyStudio
 // Source: S2 - P15 https://www.youtube.com/watch?v=qOcJDH0FfsY&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=15&ab_channel=SunnyValleyStudio
 // Source: S2 - P16 https://www.youtube.com/watch?v=-PhTCTX0q5c&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=16&ab_channel=SunnyValleyStudio
 // Source: S2 - P17 https://www.youtube.com/watch?v=aP6N245OjEQ&list=PLcRSafycjWFesScBq3JgHMNd9Tidvk9hE&index=17&ab_channel=SunnyValleyStudio
-// Source: S3 - P1 Intro to multithreading https://www.youtube.com/watch?v=oWFJl56IL4Y&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=1&ab_channel=SunnyValleyStudio
+// Source: S3 - P1 Intro to multi threading https://www.youtube.com/watch?v=oWFJl56IL4Y&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=1&ab_channel=SunnyValleyStudio
 // Source: S3 - P2 Async & Await in Unity https://www.youtube.com/watch?v=Jgwd7IDmcSA&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
 // Source: S3 - P3 Making our code multithreaded P1 https://www.youtube.com/watch?v=RfFKm7UY2q4&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=3&ab_channel=SunnyValleyStudio
 // Source: S3 - P4 Making our code multithreaded P2 https://www.youtube.com/watch?v=eQSZLJaiVBs&list=PLcRSafycjWFceHTT-m5wU51oVlJySCJbr&index=4&ab_channel=SunnyValleyStudio
